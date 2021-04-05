@@ -1,6 +1,6 @@
 package response
 
-type ClientsStats struct {
+type ClientStats struct {
 	Id              string `json:"_id"`
 	UserId          string `json:"user_id"`
 	AssocTime       int    `json:"assoc_time"`
@@ -18,5 +18,5 @@ type ClientsStats struct {
 
 type ClientsStatsResponse struct {
 	Response
-	Data []ClientsStats `json:"data"`
+	Data []ClientStats `json:"data"`
 }

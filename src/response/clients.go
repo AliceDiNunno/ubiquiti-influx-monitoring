@@ -1,6 +1,6 @@
 package response
 
-type ClientsEntry struct {
+type Client struct {
 	Id         string `json:"_id"`
 	Mac        string `json:"mac"`
 	Site       string `json:"site_id"`
@@ -14,5 +14,5 @@ type ClientsEntry struct {
 
 type ClientsResponse struct {
 	Response
-	Data []ClientsEntry `json:"data"`
+	Data []Client `json:"data"`
 }

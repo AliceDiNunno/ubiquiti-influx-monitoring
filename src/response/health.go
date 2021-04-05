@@ -1,6 +1,6 @@
 package response
 
-type NetworkHealthEntry struct {
+type Health struct {
 	Subsystem                string `json:"subsystem"`
 	UserCount                *int   `json:"num_user"`
 	GuestCount               *int   `json:"num_guest"`
@@ -21,5 +21,5 @@ type NetworkHealthEntry struct {
 
 type HealthResponse struct {
 	Response
-	Data []NetworkHealthEntry `json:"data"`
+	Data []Health `json:"data"`
 }
