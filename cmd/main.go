@@ -2,6 +2,7 @@ package main
 
 import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
+	"adinunno.fr/ubiquiti-influx-monitoring/src/service"
 	"os"
 	"os/signal"
 	"sync"
@@ -24,7 +25,13 @@ func catchSigInt() {
 }
 
 func main() {
-	infra.LoadEnv() /*
+	infra.LoadEnv()
+	cloudKey := infra.LoadCloudKey()
+	influxConfig := infra.LoadInflux()
+
+	service.LoadService(cloudKey, influxConfig)
+
+	/*
 
 		cloudKey := infra.LoadCloudKey()
 
@@ -50,7 +57,7 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				println("Tick")
+				service.Tick()
 			case <-quit:
 				ticker.Stop()
 				return

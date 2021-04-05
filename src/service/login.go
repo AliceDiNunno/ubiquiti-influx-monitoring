@@ -5,9 +5,25 @@ import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/requests"
 	"errors"
 	"net/http"
+	"time"
 )
 
-func Login(server infra.UbiquitiServer) (*http.Cookie, error) {
+var cookie *http.Cookie = nil
+var cookieLastFetch time.Time
+
+func cookieRefreshRequired() bool {
+	if cookie == nil {
+		return true
+	}
+
+	return time.Since(cookieLastFetch).Minutes() > 50 //Ubiquiti's JWT elapses an hour after generation
+}
+
+func login(server infra.UbiquitiServer) (*http.Cookie, error) {
+	if !cookieRefreshRequired() {
+		return cookie, nil
+	}
+
 	loginEndpoint := "/api/auth/login"
 
 	url := "https://" + server.Hostname + loginEndpoint
@@ -24,6 +40,7 @@ func Login(server infra.UbiquitiServer) (*http.Cookie, error) {
 	}
 
 	if len(request.Cookies()) > 0 {
+		cookieLastFetch = time.Now()
 		return request.Cookies()[0], nil
 	}
 
