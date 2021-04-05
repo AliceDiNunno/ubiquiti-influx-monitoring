@@ -22,5 +22,5 @@ func main() {
 
 	//https://10.0.0.254/proxy/network/api/s/default/stat/health
 
-	spew.Dump(service.GetClients(cloudKey, cookie))
+	spew.Dump(service.GetClientsStats(cloudKey, cookie))
 }
