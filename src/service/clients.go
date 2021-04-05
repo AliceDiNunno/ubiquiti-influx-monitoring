@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-func GetHealth(server infra.UbiquitiServer, cookie *http.Cookie) (*response.HealthResponse, error) {
-	healthEndpoint := "/proxy/network/api/s/default/stat/health"
+func GetClients(server infra.UbiquitiServer, cookie *http.Cookie) (*response.ClientsResponse, error) {
+	clientsEndpoint := "/proxy/network/api/s/default/rest/user"
 
-	url := "https://" + server.Hostname + healthEndpoint
+	url := "https://" + server.Hostname + clientsEndpoint
 
 	serverRequest, err := httpGET(url, cookie)
 
@@ -18,7 +18,7 @@ func GetHealth(server infra.UbiquitiServer, cookie *http.Cookie) (*response.Heal
 		return nil, err
 	}
 
-	var inter response.HealthResponse
+	var inter response.ClientsResponse
 	json.NewDecoder(serverRequest.Body).Decode(&inter)
 
 	return &inter, nil
