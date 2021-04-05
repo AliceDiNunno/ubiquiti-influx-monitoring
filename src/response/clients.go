@@ -10,6 +10,7 @@ type Client struct {
 	Wired      bool   `json:"is_wired"`
 	Hostname   string `json:"hostname"`
 	DeviceName string `json:"device_name"`
+	CustomName string `json:"name"`
 }
 
 type ClientsResponse struct {

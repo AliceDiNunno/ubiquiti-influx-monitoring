@@ -2,6 +2,7 @@ package service
 
 import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
+	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
 	"log"
 	"time"
 )
@@ -54,6 +55,24 @@ func Tick() {
 	if err != nil {
 		log.Println("Unable to fetch clients stats informations")
 		log.Println(err.Error())
+	}
+
+	clientsMap := map[response.Client]response.ClientStats{}
+
+	for index := range clients.Data {
+		client := clients.Data[index]
+
+		for statIndex := range clientsStats.Data {
+			stats := clientsStats.Data[statIndex]
+
+			if client.Id == stats.UserId {
+				clientsMap[client] = stats
+			}
+		}
+		/*
+			if !client.Wired {
+				println(client.Hostname, " <=> ", client.DeviceName, " <=> ", client.CustomName, " ====> ", client.Mac)
+			}*/
 	}
 
 	_, _, _ = health, clients, clientsStats
