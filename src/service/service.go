@@ -3,21 +3,25 @@ package service
 import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
 	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
+	"fmt"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"log"
 	"time"
 )
 
 var cloudKeyInformations infra.UbiquitiServer
 var influxDB infra.InfluxDB
+var influxClient influxdb2.Client
 
 func LoadService(cloudKey infra.UbiquitiServer, influx infra.InfluxDB) {
 	cloudKeyInformations = cloudKey
 	influxDB = influx
-	/*
-		client := influxdb2.NewClient(
-			fmt.Sprintf("http://%s:%d/", influx.Hostname, influx.Port),
-			fmt.Sprintf("%s:%s", influx.Username, influx.Password))
 
+	influxClient = influxdb2.NewClient(
+		fmt.Sprintf("http://%s:%d/", influx.Hostname, influx.Port),
+		fmt.Sprintf("%s:%s", influx.Username, influx.Password))
+
+	/*
 		writeAPI := client.WriteAPIBlocking("telegraf", "telegraf")
 		p := influxdb2.NewPoint("stat",
 			map[string]string{"unit": "temperature"},
@@ -69,13 +73,11 @@ func Tick() {
 				clientsMap[client] = stats
 			}
 		}
-		/*
-			if !client.Wired {
-				println(client.Hostname, " <=> ", client.DeviceName, " <=> ", client.CustomName, " ====> ", client.Mac)
-			}*/
 	}
 
-	_, _, _ = health, clients, clientsStats
+	sendHealthMetrics(influxClient, health.Data)
+	sendDeviceMetrics(influxClient, clientsMap)
+
 	endTime := time.Since(startTime)
 	println("Tick done in: ", endTime.Milliseconds(), "ms")
 }
