@@ -31,22 +31,6 @@ func main() {
 
 	service.LoadService(cloudKey, influxConfig)
 
-	/*
-
-		cloudKey := infra.LoadCloudKey()
-
-		cookie, err := service.Login(cloudKey)
-
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		println("COOKIE FOUND")
-
-		//https://10.0.0.254/proxy/network/api/s/default/stat/health
-
-		spew.Dump(service.GetClientsStats(cloudKey, cookie))*/
-
 	ticker := time.NewTicker(time.Second)
 	quit := make(chan struct{})
 	waitlock.Add(1)
