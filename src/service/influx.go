@@ -72,14 +72,12 @@ func newWlanPoint(client response.Client) *write.Point {
 }
 
 func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]response.ClientStats) {
-	for client, stat := range metrics {
-		_ = stat
+	points := []*write.Point{}
+	writeAPI := influx.WriteAPIBlocking("telegraf", "telegraf")
 
-		writeAPI := influx.WriteAPIBlocking("telegraf", "telegraf")
+	for client, stat := range metrics {
 
 		netPoint := newNetPoint(client)
-
-		points := []*write.Point{}
 
 		if !stat.IsWired {
 			wlanPoint := newWlanPoint(client)
@@ -95,11 +93,11 @@ func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]resp
 		netPoint = netPoint.AddField(InputBytesSent, stat.BytesSent)
 		netPoint = netPoint.AddField(InputTransmissionRetried, stat.TxRetries)
 		points = append(points, netPoint)
+	}
 
-		// write point immediately
-		err := writeAPI.WritePoint(context.Background(), points...)
-		if err != nil {
-			log.Fatalln(err)
-		}
+	// write all the points
+	err := writeAPI.WritePoint(context.Background(), points...)
+	if err != nil {
+		log.Fatalln(err)
 	}
 }
