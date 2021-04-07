@@ -2,7 +2,10 @@ package service
 
 import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
+	"context"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"log"
+	"time"
 )
 
 const ( //Telegraf compatible input names
@@ -44,6 +47,7 @@ func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
 		println(InputPing, healthMetric.SpeedTestPing)
 
 		println("=====")
+
 	}
 }
 
@@ -51,18 +55,31 @@ func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]resp
 	for client, stat := range metrics {
 		_ = stat
 
-		println(client.GetDeviceName())
-		println(InputIsWired, stat.IsWired)
+		writeAPI := influx.WriteAPIBlocking("telegraf", "telegraf")
+
+		p := influxdb2.NewPointWithMeasurement("system")
+
+		p = p.AddTag("host", client.GetDeviceName())
+		p = p.AddTag("id", client.Id)
+
+		p = p.AddField(InputIsWired, stat.IsWired)
 		if !stat.IsWired {
-			println(InputWlanCCQ, stat.Ccq)
-			println(InputNoise, stat.Noise)
-			println(InputRssi, stat.Rssi)
-			println(InputSignal, stat.Signal)
-			println(InputTransmissionPower, stat.TxPower)
+			p = p.AddField(InputWlanCCQ, stat.Ccq)
+			p = p.AddField(InputNoise, stat.Noise)
+			p = p.AddField(InputRssi, stat.Rssi)
+			p = p.AddField(InputSignal, stat.Signal)
+			p = p.AddField(InputTransmissionPower, stat.TxPower)
 		}
-		println(InputBytesReceived, stat.BytesReceived)
-		println(InputBytesSent, stat.BytesSent)
-		println(InputTransmissionRetried, stat.TxRetries)
-		println("=====")
+		p = p.AddField(InputBytesReceived, stat.BytesReceived)
+		p = p.AddField(InputBytesSent, stat.BytesSent)
+		p = p.AddField(InputTransmissionRetried, stat.TxRetries)
+
+		p.SetTime(time.Now())
+
+		// write point immediately
+		err := writeAPI.WritePoint(context.Background(), p)
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
