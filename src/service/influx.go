@@ -33,8 +33,10 @@ const ( //Telegraf compatible input names
 )
 
 func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
-	for _, healthMetric := range metrics {
-		println(healthMetric.Subsystem)
+	for _, _ = range metrics {
+		//TO DO
+
+		/*println(healthMetric.Subsystem)
 		println(InputBytesSent, healthMetric.BytesSent)
 		println(InputBytesReceived, healthMetric.BytesReceived)
 		println(InputSwitchCount, healthMetric.SwitchCount)
@@ -47,7 +49,7 @@ func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
 		println(InputUserCount, healthMetric.UserCount)
 		println(InputPing, healthMetric.SpeedTestPing)
 
-		println("=====")
+		println("=====")*/
 
 	}
 }
@@ -76,7 +78,6 @@ func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]resp
 	writeAPI := influx.WriteAPIBlocking("telegraf", "telegraf")
 
 	for client, stat := range metrics {
-
 		netPoint := newNetPoint(client)
 
 		if !stat.IsWired {

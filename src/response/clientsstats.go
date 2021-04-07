@@ -12,8 +12,8 @@ type ClientStats struct {
 	Signal          int    `json:"signal"`
 	TxPower         int    `json:"tx_power"`
 	TxRetries       int    `json:"tx_retries"`
-	BytesSent       int    `json:"tx_bytes"`
-	BytesReceived   int    `json:"rx_bytes"`
+	BytesSent       int    `json:"tx_bytes-r"`
+	BytesReceived   int    `json:"rx_bytes-r"`
 }
 
 type ClientsStatsResponse struct {
