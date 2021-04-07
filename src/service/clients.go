@@ -8,7 +8,7 @@ import (
 )
 
 func GetClients(server infra.UbiquitiServer, cookie *http.Cookie) (*response.ClientsResponse, error) {
-	clientsEndpoint := "/proxy/network/api/s/default/rest/user"
+	clientsEndpoint := "/proxy/network/api/s/" + server.Site + "/rest/user"
 
 	url := "https://" + server.Hostname + clientsEndpoint
 

@@ -8,7 +8,7 @@ import (
 )
 
 func GetHealth(server infra.UbiquitiServer, cookie *http.Cookie) (*response.HealthResponse, error) {
-	healthEndpoint := "/proxy/network/api/s/default/stat/health"
+	healthEndpoint := "/proxy/network/api/s/" + server.Site + "/stat/health"
 
 	url := "https://" + server.Hostname + healthEndpoint
 

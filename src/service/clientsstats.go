@@ -8,7 +8,7 @@ import (
 )
 
 func GetClientsStats(server infra.UbiquitiServer, cookie *http.Cookie) (*response.ClientsStatsResponse, error) {
-	clientsEndpoint := "/proxy/network/api/s/default/stat/sta"
+	clientsEndpoint := "/proxy/network/api/s/" + server.Site + "/stat/sta"
 
 	url := "https://" + server.Hostname + clientsEndpoint
 
