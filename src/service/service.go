@@ -20,18 +20,6 @@ func LoadService(cloudKey infra.UbiquitiServer, influx infra.InfluxDB) {
 	influxClient = influxdb2.NewClient(
 		fmt.Sprintf("http://%s:%d/", influx.Hostname, influx.Port),
 		fmt.Sprintf("%s:%s", influx.Username, influx.Password))
-
-	/*
-		writeAPI := client.WriteAPIBlocking("telegraf", "telegraf")
-		p := influxdb2.NewPoint("stat",
-			map[string]string{"unit": "temperature"},
-			map[string]interface{}{"avg": 24.5, "max": 45},
-			time.Now())
-		// write point immediately
-		err := writeAPI.WritePoint(context.Background(), p)
-		if err != nil {
-			log.Fatalln(err)
-		}*/
 }
 
 func Tick() {
