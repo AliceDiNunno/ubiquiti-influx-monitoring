@@ -42,7 +42,6 @@ func main() {
 			select {
 			case <-ticker.C:
 				service.Tick()
-				waitlock.Done()
 			case <-quit:
 				ticker.Stop()
 				return
