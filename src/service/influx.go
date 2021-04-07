@@ -4,6 +4,7 @@ import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
 	"context"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	"log"
 	"time"
 )
@@ -51,33 +52,52 @@ func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
 	}
 }
 
+func newPoint(client response.Client, tag string) *write.Point {
+	p := influxdb2.NewPointWithMeasurement(tag)
+
+	p = p.AddTag("host", client.GetDeviceName())
+	p = p.AddTag("id", client.Id)
+
+	p.SetTime(time.Now())
+
+	return p
+}
+
+func newNetPoint(client response.Client) *write.Point {
+	return newPoint(client, "net")
+}
+
+func newWlanPoint(client response.Client) *write.Point {
+	return newPoint(client, "wlan")
+}
+
 func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]response.ClientStats) {
 	for client, stat := range metrics {
 		_ = stat
 
 		writeAPI := influx.WriteAPIBlocking("telegraf", "telegraf")
 
-		p := influxdb2.NewPointWithMeasurement("system")
+		netPoint := newNetPoint(client)
 
-		p = p.AddTag("host", client.GetDeviceName())
-		p = p.AddTag("id", client.Id)
+		points := []*write.Point{}
 
-		p = p.AddField(InputIsWired, stat.IsWired)
 		if !stat.IsWired {
-			p = p.AddField(InputWlanCCQ, stat.Ccq)
-			p = p.AddField(InputNoise, stat.Noise)
-			p = p.AddField(InputRssi, stat.Rssi)
-			p = p.AddField(InputSignal, stat.Signal)
-			p = p.AddField(InputTransmissionPower, stat.TxPower)
+			wlanPoint := newWlanPoint(client)
+			wlanPoint = wlanPoint.AddField(InputWlanCCQ, stat.Ccq)
+			wlanPoint = wlanPoint.AddField(InputNoise, stat.Noise)
+			wlanPoint = wlanPoint.AddField(InputRssi, stat.Rssi)
+			wlanPoint = wlanPoint.AddField(InputSignal, stat.Signal)
+			wlanPoint = wlanPoint.AddField(InputTransmissionPower, stat.TxPower)
+			points = append(points, wlanPoint)
 		}
-		p = p.AddField(InputBytesReceived, stat.BytesReceived)
-		p = p.AddField(InputBytesSent, stat.BytesSent)
-		p = p.AddField(InputTransmissionRetried, stat.TxRetries)
 
-		p.SetTime(time.Now())
+		netPoint = netPoint.AddField(InputBytesReceived, stat.BytesReceived)
+		netPoint = netPoint.AddField(InputBytesSent, stat.BytesSent)
+		netPoint = netPoint.AddField(InputTransmissionRetried, stat.TxRetries)
+		points = append(points, netPoint)
 
 		// write point immediately
-		err := writeAPI.WritePoint(context.Background(), p)
+		err := writeAPI.WritePoint(context.Background(), points...)
 		if err != nil {
 			log.Fatalln(err)
 		}
