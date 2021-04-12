@@ -51,14 +51,16 @@ func Tick() {
 
 	clientsMap := map[response.Client]response.ClientStats{}
 
-	for index := range clients.Data {
-		client := clients.Data[index]
+	if err == nil {
+		for index := range clients.Data {
+			client := clients.Data[index]
 
-		for statIndex := range clientsStats.Data {
-			stats := clientsStats.Data[statIndex]
+			for statIndex := range clientsStats.Data {
+				stats := clientsStats.Data[statIndex]
 
-			if client.Id == stats.UserId {
-				clientsMap[client] = stats
+				if client.Id == stats.UserId {
+					clientsMap[client] = stats
+				}
 			}
 		}
 	}
