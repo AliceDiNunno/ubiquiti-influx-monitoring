@@ -51,14 +51,16 @@ func Tick() {
 
 	clientsMap := map[response.Client]response.ClientStats{}
 
-	for index := range clients.Data {
-		client := clients.Data[index]
+	if err == nil {
+		for index := range clients.Data {
+			client := clients.Data[index]
 
-		for statIndex := range clientsStats.Data {
-			stats := clientsStats.Data[statIndex]
+			for statIndex := range clientsStats.Data {
+				stats := clientsStats.Data[statIndex]
 
-			if client.Id == stats.UserId {
-				clientsMap[client] = stats
+				if client.Id == stats.UserId {
+					clientsMap[client] = stats
+				}
 			}
 		}
 	}
@@ -67,5 +69,10 @@ func Tick() {
 	sendDeviceMetrics(influxClient, clientsMap)
 
 	endTime := time.Since(startTime)
+
+	health = nil
+	clients = nil
+	clientsStats = nil
+
 	println("Tick done in: ", endTime.Milliseconds(), "ms")
 }

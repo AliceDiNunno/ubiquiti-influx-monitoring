@@ -101,4 +101,11 @@ func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]resp
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	for _, pointToFree := range points {
+		_ = pointToFree
+		pointToFree = nil
+	}
+
+	points = nil
 }
