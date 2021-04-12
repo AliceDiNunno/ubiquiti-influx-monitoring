@@ -67,5 +67,10 @@ func Tick() {
 	sendDeviceMetrics(influxClient, clientsMap)
 
 	endTime := time.Since(startTime)
+
+	health = nil
+	clients = nil
+	clientsStats = nil
+
 	println("Tick done in: ", endTime.Milliseconds(), "ms")
 }

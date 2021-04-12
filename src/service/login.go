@@ -24,6 +24,8 @@ func login(server infra.UbiquitiServer) (*http.Cookie, error) {
 		return cookie, nil
 	}
 
+	cookie = nil
+
 	loginEndpoint := "/api/auth/login"
 
 	url := "https://" + server.Hostname + loginEndpoint
