@@ -46,5 +46,5 @@ func login(server infra.UbiquitiServer) (*http.Cookie, error) {
 		return request.Cookies()[0], nil
 	}
 
-	return nil, errors.New("Server did not respond with a valid token")
+	return nil, errors.New("server did not respond with a valid token")
 }
