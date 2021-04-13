@@ -45,6 +45,7 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
+				http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 				service.Tick()
 			case <-quit:
 				ticker.Stop()
