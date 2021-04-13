@@ -17,6 +17,7 @@ func buildRequest(method string, url string, body io.Reader) (*http.Request, err
 	request, err := http.NewRequest(method, url, body)
 
 	if err != nil {
+		request = nil
 		return nil, err
 	}
 

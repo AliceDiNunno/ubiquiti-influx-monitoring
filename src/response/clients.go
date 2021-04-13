@@ -27,9 +27,11 @@ func (c Client) GetDeviceName() string {
 
 	for _, name := range names {
 		if tools.ValidateHostName(name) {
+			names = nil
 			return name
 		}
 	}
 
+	names = nil
 	return ""
 }

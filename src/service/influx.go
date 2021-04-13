@@ -52,6 +52,7 @@ func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
 		println("=====")*/
 
 	}
+	metrics = nil
 }
 
 func newPoint(client response.Client, tag string) *write.Point {
@@ -88,12 +89,14 @@ func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]resp
 			wlanPoint = wlanPoint.AddField(InputSignal, stat.Signal)
 			wlanPoint = wlanPoint.AddField(InputTransmissionPower, stat.TxPower)
 			points = append(points, wlanPoint)
+			wlanPoint = nil
 		}
 
 		netPoint = netPoint.AddField(InputBytesReceived, stat.BytesReceived)
 		netPoint = netPoint.AddField(InputBytesSent, stat.BytesSent)
 		netPoint = netPoint.AddField(InputTransmissionRetried, stat.TxRetries)
 		points = append(points, netPoint)
+		netPoint = nil
 	}
 
 	// write all the points

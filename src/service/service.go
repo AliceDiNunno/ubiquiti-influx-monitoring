@@ -73,6 +73,7 @@ func Tick() {
 	health = nil
 	clients = nil
 	clientsStats = nil
+	clientsMap = nil
 
 	println("Tick done in: ", endTime.Milliseconds(), "ms")
 }

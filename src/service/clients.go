@@ -15,12 +15,18 @@ func GetClients(server infra.UbiquitiServer, cookie *http.Cookie) (*response.Cli
 	serverRequest, err := httpGET(url, cookie)
 
 	if err != nil {
+		serverRequest = nil
 		return nil, err
 	}
 
 	var inter response.ClientsResponse
-	json.NewDecoder(serverRequest.Body).Decode(&inter)
-	serverRequest = nil
+	decoder := json.NewDecoder(serverRequest.Body)
+	err = decoder.Decode(&inter)
 
+	decoder = nil
+	serverRequest = nil
+	if err != nil {
+		return nil, err
+	}
 	return &inter, nil
 }
