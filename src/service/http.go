@@ -2,7 +2,6 @@ package service
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -10,8 +9,6 @@ import (
 
 func buildClient() *http.Client {
 	client := &http.Client{}
-
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
 	return client
 }
@@ -34,6 +31,8 @@ func httpGET(url string, cookie *http.Cookie) (*http.Response, error) {
 	request, err := buildRequest("GET", url, nil)
 
 	if err != nil {
+		client = nil
+		request = nil
 		return nil, err
 	}
 
@@ -41,8 +40,11 @@ func httpGET(url string, cookie *http.Cookie) (*http.Response, error) {
 		request.AddCookie(cookie)
 	}
 
-	return client.Do(request)
+	response, err := client.Do(request)
+	request = nil
+	client = nil
 
+	return response, err
 }
 
 func httpPOST(url string, body interface{}, cookie *http.Cookie) (*http.Response, error) {
@@ -53,9 +55,15 @@ func httpPOST(url string, body interface{}, cookie *http.Cookie) (*http.Response
 	}
 
 	client := buildClient()
-	request, err := buildRequest("POST", url, bytes.NewBuffer(bodyJson))
+
+	bodyBuf := bytes.NewBuffer(bodyJson)
+	request, err := buildRequest("POST", url, bodyBuf)
+	bodyBuf = nil
+	bodyJson = nil
 
 	if err != nil {
+		client = nil
+		request = nil
 		return nil, err
 	}
 
@@ -63,5 +71,9 @@ func httpPOST(url string, body interface{}, cookie *http.Cookie) (*http.Response
 		request.AddCookie(cookie)
 	}
 
-	return client.Do(request)
+	response, err := client.Do(request)
+	request = nil
+	client = nil
+
+	return response, err
 }

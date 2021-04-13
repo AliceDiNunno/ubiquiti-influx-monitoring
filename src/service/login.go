@@ -38,13 +38,17 @@ func login(server infra.UbiquitiServer) (*http.Cookie, error) {
 	request, err := httpPOST(url, login, nil)
 
 	if err != nil {
+		request = nil
 		return nil, err
 	}
 
 	if len(request.Cookies()) > 0 {
 		cookieLastFetch = time.Now()
-		return request.Cookies()[0], nil
+		cookie := request.Cookies()[0]
+		request = nil
+		return cookie, nil
 	}
+	request = nil
 
 	return nil, errors.New("server did not respond with a valid token")
 }

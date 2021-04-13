@@ -3,6 +3,8 @@ package main
 import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
 	"adinunno.fr/ubiquiti-influx-monitoring/src/service"
+	"crypto/tls"
+	"net/http"
 	"os"
 	"os/signal"
 	"sync"
@@ -25,6 +27,8 @@ func catchSigInt() {
 }
 
 func main() {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+
 	infra.LoadEnv()
 	cloudKey := infra.LoadCloudKey()
 	influxConfig := infra.LoadInflux()
