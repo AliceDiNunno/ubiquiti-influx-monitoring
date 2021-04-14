@@ -21,6 +21,7 @@ func GetHealth(server infra.UbiquitiServer, cookie *http.Cookie) (*response.Heal
 	var inter response.HealthResponse
 	decoder := json.NewDecoder(serverRequest.Body)
 	err = decoder.Decode(&inter)
+	defer serverRequest.Body.Close()
 
 	decoder = nil
 	serverRequest = nil

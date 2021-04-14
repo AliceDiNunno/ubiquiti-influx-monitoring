@@ -22,6 +22,7 @@ func GetClientsStats(server infra.UbiquitiServer, cookie *http.Cookie) (*respons
 	var inter response.ClientsStatsResponse
 	decoder := json.NewDecoder(serverRequest.Body)
 	err = decoder.Decode(&inter)
+	defer serverRequest.Body.Close()
 
 	serverRequest = nil
 	decoder = nil

@@ -21,7 +21,9 @@ func GetClients(server infra.UbiquitiServer, cookie *http.Cookie) (*response.Cli
 
 	var inter response.ClientsResponse
 	decoder := json.NewDecoder(serverRequest.Body)
+
 	err = decoder.Decode(&inter)
+	defer serverRequest.Body.Close()
 
 	decoder = nil
 	serverRequest = nil
