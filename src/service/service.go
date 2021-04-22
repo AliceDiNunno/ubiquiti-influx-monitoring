@@ -6,7 +6,6 @@ import (
 	"fmt"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"log"
-	"time"
 )
 
 var cloudKeyInformations infra.UbiquitiServer
@@ -23,7 +22,6 @@ func LoadService(cloudKey infra.UbiquitiServer, influx infra.InfluxDB) {
 }
 
 func Tick() {
-	startTime := time.Now()
 	cookie, err := login(cloudKeyInformations)
 
 	if err != nil {
@@ -68,12 +66,8 @@ func Tick() {
 	sendHealthMetrics(influxClient, health.Data)
 	sendDeviceMetrics(influxClient, clientsMap)
 
-	endTime := time.Since(startTime)
-
 	health = nil
 	clients = nil
 	clientsStats = nil
 	clientsMap = nil
-
-	println("Tick done in: ", endTime.Milliseconds(), "ms")
 }
