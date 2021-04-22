@@ -4,13 +4,12 @@ import (
 	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
 	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
 func GetClients(server infra.UbiquitiServer, cookie *http.Cookie) (*response.ClientsResponse, error) {
-	clientsEndpoint := "/proxy/network/api/s/" + server.Site + "/rest/user"
-
-	url := "https://" + server.Hostname + clientsEndpoint
+	url := fmt.Sprintf("https://%s/proxy/network/api/s/%s/rest/user", server.Hostname, server.Site)
 
 	serverRequest, err := httpGET(url, cookie)
 
