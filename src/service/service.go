@@ -65,9 +65,4 @@ func Tick() {
 
 	sendHealthMetrics(influxClient, health.Data)
 	sendDeviceMetrics(influxClient, clientsMap)
-
-	health = nil
-	clients = nil
-	clientsStats = nil
-	clientsMap = nil
 }
