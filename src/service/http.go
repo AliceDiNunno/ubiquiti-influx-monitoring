@@ -8,7 +8,9 @@ import (
 )
 
 func buildClient() *http.Client {
-	client := &http.Client{}
+	client := &http.Client{
+	  Timeout: time.Second * 10,
+	}
 
 	return client
 }
