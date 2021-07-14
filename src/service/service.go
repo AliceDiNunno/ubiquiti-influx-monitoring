@@ -1,53 +1,53 @@
 package service
 
 import (
-	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
-	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
 	"fmt"
+	"github.com/AliceDiNunno/gobiquiti"
+	"github.com/AliceDiNunno/ubiquiti-influx-monitoring/src/infra"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"log"
 )
 
-var cloudKeyInformations infra.UbiquitiServer
-var influxDB infra.InfluxDB
-var influxClient influxdb2.Client
+func NewService(cloudKey gobiquiti.Config, influx infra.InfluxDB) *Instance {
+	cloudKeyInstance := gobiquiti.CloudKeyInstance{Config: cloudKey}
 
-func LoadService(cloudKey infra.UbiquitiServer, influx infra.InfluxDB) {
-	cloudKeyInformations = cloudKey
-	influxDB = influx
-
-	influxClient = influxdb2.NewClient(
+	influxClient := influxdb2.NewClient(
 		fmt.Sprintf("http://%s:%d/", influx.Hostname, influx.Port),
 		fmt.Sprintf("%s:%s", influx.Username, influx.Password))
+
+	return &Instance{
+		CloudKey:     cloudKeyInstance,
+		influxClient: influxClient,
+	}
 }
 
-func Tick() {
-	cookie, err := login(cloudKeyInformations)
+func (i *Instance) Tick() {
+	err := i.CloudKey.Login()
 
 	if err != nil {
 		log.Println("Unable to process tick")
 		log.Println(err.Error())
 	}
 
-	health, err := GetHealth(cloudKeyInformations, cookie)
+	health, err := i.CloudKey.GetHealth()
 	if err != nil {
 		log.Println("Unable to fetch health informations")
 		log.Println(err.Error())
 	}
 
-	clients, err := GetClients(cloudKeyInformations, cookie)
+	clients, err := i.CloudKey.GetClients()
 	if err != nil {
 		log.Println("Unable to fetch clients informations")
 		log.Println(err.Error())
 	}
 
-	clientsStats, err := GetClientsStats(cloudKeyInformations, cookie)
+	clientsStats, err := i.CloudKey.GetClientsStats()
 	if err != nil {
 		log.Println("Unable to fetch clients stats informations")
 		log.Println(err.Error())
 	}
 
-	clientsMap := map[response.Client]response.ClientStats{}
+	clientsMap := map[gobiquiti.Client]gobiquiti.ClientStats{}
 
 	if err == nil {
 		for index := range clients.Data {
@@ -63,6 +63,6 @@ func Tick() {
 		}
 	}
 
-	sendHealthMetrics(influxClient, health.Data)
-	sendDeviceMetrics(influxClient, clientsMap)
+	i.sendHealthMetrics(health.Data)
+	i.sendDeviceMetrics(clientsMap)
 }

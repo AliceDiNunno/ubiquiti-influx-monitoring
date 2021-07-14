@@ -1,8 +1,8 @@
 package service
 
 import (
-	"adinunno.fr/ubiquiti-influx-monitoring/src/response"
 	"context"
+	"github.com/AliceDiNunno/gobiquiti"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	"log"
@@ -32,7 +32,7 @@ const ( //Telegraf compatible input names
 	InputUserCount                = "count_user"
 )
 
-func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
+func (i *Instance) sendHealthMetrics(metrics []gobiquiti.Health) {
 	for _, _ = range metrics {
 		//TO DO
 
@@ -55,7 +55,7 @@ func sendHealthMetrics(influx influxdb2.Client, metrics []response.Health) {
 	metrics = nil
 }
 
-func newPoint(client response.Client, tag string) *write.Point {
+func newPoint(client gobiquiti.Client, tag string) *write.Point {
 	p := influxdb2.NewPointWithMeasurement(tag)
 
 	p = p.AddTag("host", client.GetDeviceName())
@@ -66,17 +66,17 @@ func newPoint(client response.Client, tag string) *write.Point {
 	return p
 }
 
-func newNetPoint(client response.Client) *write.Point {
+func newNetPoint(client gobiquiti.Client) *write.Point {
 	return newPoint(client, "net")
 }
 
-func newWlanPoint(client response.Client) *write.Point {
+func newWlanPoint(client gobiquiti.Client) *write.Point {
 	return newPoint(client, "wlan")
 }
 
-func sendDeviceMetrics(influx influxdb2.Client, metrics map[response.Client]response.ClientStats) {
-	points := []*write.Point{}
-	writeAPI := influx.WriteAPIBlocking("telegraf", "telegraf")
+func (i *Instance) sendDeviceMetrics(metrics map[gobiquiti.Client]gobiquiti.ClientStats) {
+	var points []*write.Point
+	writeAPI := i.influxClient.WriteAPIBlocking("telegraf", "telegraf")
 
 	for client, stat := range metrics {
 		netPoint := newNetPoint(client)

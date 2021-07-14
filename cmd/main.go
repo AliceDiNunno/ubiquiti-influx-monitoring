@@ -1,9 +1,9 @@
 package main
 
 import (
-	"adinunno.fr/ubiquiti-influx-monitoring/src/infra"
-	"adinunno.fr/ubiquiti-influx-monitoring/src/service"
 	"crypto/tls"
+	"github.com/AliceDiNunno/ubiquiti-influx-monitoring/src/infra"
+	"github.com/AliceDiNunno/ubiquiti-influx-monitoring/src/service"
 	"net/http"
 	"os"
 	"os/signal"
@@ -33,7 +33,7 @@ func main() {
 	cloudKey := infra.LoadCloudKey()
 	influxConfig := infra.LoadInflux()
 
-	service.LoadService(cloudKey, influxConfig)
+	instance := service.NewService(cloudKey, influxConfig)
 
 	ticker := time.NewTicker(time.Second)
 	quit := make(chan struct{})
@@ -46,7 +46,7 @@ func main() {
 			select {
 			case <-ticker.C:
 				http.DefaultTransport.(*http.Transport).CloseIdleConnections()
-				service.Tick()
+				instance.Tick()
 			case <-quit:
 				ticker.Stop()
 				return

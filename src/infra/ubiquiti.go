@@ -1,14 +1,9 @@
 package infra
 
-type UbiquitiServer struct {
-	Hostname string
-	Username string
-	Password string
-	Site     string
-}
+import "github.com/AliceDiNunno/gobiquiti"
 
-func LoadCloudKey() UbiquitiServer {
-	return UbiquitiServer{
+func LoadCloudKey() gobiquiti.Config {
+	return gobiquiti.Config{
 		Hostname: RequireEnvString("UBNT_HOSTNAME"),
 		Username: RequireEnvString("UBNT_USERNAME"),
 		Password: RequireEnvString("UBNT_PASSWORD"),
