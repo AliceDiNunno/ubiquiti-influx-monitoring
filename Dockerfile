@@ -1,7 +1,4 @@
-# Multi-stage layout
-FROM golang:1.16
-
-#ENV GO111MODULE=on
+FROM golang:1.21
 
 WORKDIR /app
 
@@ -9,11 +6,21 @@ COPY go.mod .
 COPY go.sum .
 
 RUN go mod download
+RUN go mod tidy
 
-COPY . .
+COPY .. .
 
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ./cmd/main.go
+RUN go build ./cmd/main.go
 
 WORKDIR /app
+
+ARG GITHUB_SHA
+ARG GITHUB_REPOSITORY
+ARG GITHUB_REPOSITORY_URL
+
+ENV GITHUB_SHA=${GITHUB_SHA}
+ENV GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
+ENV GITHUB_REPOSITORY_URL=${GITHUB_REPOSITORY_URL}
+
 ENTRYPOINT ["./main"]
