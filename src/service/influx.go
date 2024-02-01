@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/AliceDiNunno/gobiquiti"
+	"github.com/davecgh/go-spew/spew"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
 	"log"
@@ -76,7 +77,7 @@ func newWlanPoint(client gobiquiti.Client) *write.Point {
 
 func (i *Instance) sendDeviceMetrics(metrics map[gobiquiti.Client]gobiquiti.ClientStats) {
 	var points []*write.Point
-	writeAPI := i.influxClient.WriteAPIBlocking("telegraf", "telegraf")
+	writeAPI := i.influxClient.WriteAPIBlocking(i.InfluxOrg, i.InfluxBucket)
 
 	for client, stat := range metrics {
 		netPoint := newNetPoint(client)
@@ -99,9 +100,12 @@ func (i *Instance) sendDeviceMetrics(metrics map[gobiquiti.Client]gobiquiti.Clie
 		netPoint = nil
 	}
 
+	spew.Dump(points)
+
 	// write all the points
 	err := writeAPI.WritePoint(context.Background(), points...)
 	if err != nil {
+		log.Println("Unable to write points to influx")
 		log.Fatalln(err)
 	}
 

@@ -43,3 +43,22 @@ func RequireEnvInt(name string) int {
 	return envVariable
 }
 
+func GetEnvStringWithDefault(name string, defaultValue string) string {
+	envVariable, exists := os.LookupEnv(name)
+
+	value := ""
+
+	if !exists {
+		value = defaultValue
+	} else {
+		value = envVariable
+	}
+
+	if strings.Contains(name, "SECRET") || strings.Contains(name, "TOKEN") || strings.Contains(name, "PASSWORD") {
+		log.Println("[", name, "] = ", "****")
+	} else {
+		log.Println("[", name, "] = ", value, " (default: ", defaultValue, ")")
+	}
+
+	return value
+}

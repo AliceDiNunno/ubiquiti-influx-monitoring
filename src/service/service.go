@@ -1,25 +1,9 @@
 package service
 
 import (
-	"fmt"
 	"github.com/AliceDiNunno/gobiquiti"
-	"github.com/AliceDiNunno/ubiquiti-influx-monitoring/src/infra"
-	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"log"
 )
-
-func NewService(cloudKey gobiquiti.Config, influx infra.InfluxDB) *Instance {
-	cloudKeyInstance := gobiquiti.CloudKeyInstance{Config: cloudKey}
-
-	influxClient := influxdb2.NewClient(
-		fmt.Sprintf("http://%s:%d/", influx.Hostname, influx.Port),
-		fmt.Sprintf("%s:%s", influx.Username, influx.Password))
-
-	return &Instance{
-		CloudKey:     cloudKeyInstance,
-		influxClient: influxClient,
-	}
-}
 
 func (i *Instance) Tick() {
 	err := i.CloudKey.Login()

@@ -33,7 +33,7 @@ func main() {
 	cloudKey := infra.LoadCloudKey()
 	influxConfig := infra.LoadInflux()
 
-	instance := service.NewService(cloudKey, influxConfig)
+	instance := service.NewInstance(cloudKey, influxConfig)
 
 	ticker := time.NewTicker(time.Second)
 	quit := make(chan struct{})
